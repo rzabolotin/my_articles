@@ -1,12 +1,12 @@
 # Introducing
 
-Hi guys. This is my first blog post, not only on this platform, but in general (And I write it using google.translate, sorry for mistakes). 
+Hi guys. This is my first blog post, not only on this platform, but in general (And I write it using Google Translate, sorry for mistakes). 
 I really liked the idea of this platform, so I decided to give it a try.
 I really love programming in python, although this is not my main area of work. Today I want to share with you one library for logging.
 
 How do you prefer to write debug messages in your scripts? I usually use plain print, and that's usually enough.
 
-But when the project gets more complex, all these prints posted all over the project can be terribly annoying, and they mess up the code.
+When the project gets more complex, all these prints posted all over the project can be terribly annoying, and they mess up the code.
 In such cases, I prefer to include the loguru library in my project. It's a third party library, but I think it's worth adding to your project.
 
 # Install
@@ -19,7 +19,7 @@ pip install loguru
 ``` 
 
 What I like the most about it is the color output in the console. I really like this feature.
-But it also has a default log format set up, quite detailed, and in common you don't need to configure anything else.
+It also has a default log format set up, quite detailed, and in common you don't need to configure anything else.
 
 Logs are of several levels
 - trace
@@ -65,18 +65,18 @@ Setting up logging to a file is also simple
 logger.add("my_wonderful.log")
 ```
 
-But this is a simple case, but what if you want to separate the logs by time
+This is a simple case, but what if you want to separate the logs by time
 ```
 logger.add("my_wonderful_{time}.log")
 ```
-Not the best option. This will do one file for each milisecond, let's specify to do one file per day.
+Not the best option. This will do one file for each millisecond, let's specify to do one file per day.
 ```
 logger.add("my_wonderful_{time:YYYY_MM_DD}.log")
 ```
 
 Excellent! 
 
-And here are some more interesting options from the official documentation.
+Here are some more interesting options from the official documentation.
 ```
 logger.add("file_1.log", rotation="500 MB") # Automatically rotate too big file
 logger.add("file_2.log", rotation="12:00") # New file is created each day at noon
@@ -87,8 +87,8 @@ logger.add("file_Y.log", compression="zip") # Save some loved space
 
 # Change format of logs
 
-Unfortunately, there is no method in loguru that would allow you to simply change the format of the log messages, so to do this, you first need to delete the logger created by import,
-and then add a new one indicating the format
+Unfortunately, there is no method in loguru that would allow you to simply change the format of the log messages. 
+So to do this, you first need to delete the logger created by import, and then add a new one indicating the format.
 
 ```
 import sys
@@ -118,16 +118,16 @@ The output is ...
 
 We can even use variables in the logs. 
 To do this, you need to set your own format with additional variables using dictionary **extra**.
-For example..
+For example ...
 ```
 logger.add(sys.stderr, colorize=True, 
 format=" <level>{level}</level>| {extra[user_id]}| <magenta>{time:YYYY-MM-DD}</magenta>| <level>{message}</level>")
 ```
-And now you need to use the logger like this
+Now you need to use the logger like this.
 ```
 logger.debug("enter the system", user_id="007")
 ```
-But in order not to enter the value of the variable every time, you can bind it to the logger, this is much cleaner
+In order not to enter the value of the variable every time, you can bind it to the logger, this is much cleaner
 ```
 logger = logger.bind(user_id="007")
 logger.debug("enter the system")
@@ -149,7 +149,8 @@ logger2.debug("checking user documents")
 
 # Custom log handler
 
-And what if you want to do some special processing of the logs, you can split files depending on binded variables, send reports to the mail or write records to the database in some cases.
+What if you want to do some special processing of the logs. You can split files depending on binded variables,
+send reports to the mail or write records to the database in some cases.
 To do this, you can very simply write your own function, and connect it as a message handler (sink)
 
 ```
@@ -187,7 +188,8 @@ logger.critical("DB IS OFFLINE")
 
 # Notifiers 
 
-Well, in addition, you can use the wonderful  [notifiers](https://github.com/liiight/notifiers)  library (installed separately), in which many different notification options are already configured
+Well, in addition, you can use the wonderful  [notifiers](https://github.com/liiight/notifiers)  library (installed separately), 
+in which there are a lot of already configured notifiers.
 
 ```
 import notifiers
@@ -212,7 +214,7 @@ logger.add(handler, level="ERROR")
 -  [Overview](https://loguru.readthedocs.io/en/stable/overview.html) 
 -  [Help & Guides ](https://loguru.readthedocs.io/en/stable/resources.html) 
 
-# Conclussion
+# Conclusion
 
 I really hope that the information was interesting and useful for you.
 Use loguru in your projects. It's very cool.
