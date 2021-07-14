@@ -150,5 +150,11 @@ To run the script you need to run next command:
 Works, just fine! 
 
 ## At the end
-Python is known for having [many web frameworks](https://wiki.python.org/moin/WebFrameworks), and anyone can find the one they like best. I have shown examples of the implementation of the simplest API on three of them. 
-Hope you found it interesting.
+Python is known for having [many web frameworks](https://wiki.python.org/moin/WebFrameworks), and anyone can find the one they like best. I have shown examples of the implementation of the simplest API on three of them.   
+
+
+
+The code of examples are available on [github](https://github.com/rzabolotin/simple_rest_api)
+
+
+Hope you found it interesting. See you.
