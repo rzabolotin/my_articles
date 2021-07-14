@@ -42,15 +42,17 @@ def predict(numbers: List[float]):
 
 Ok, we have pickled model, and also a function that makes predictions, using it.
 Now we'll create REST API services for it. I show you examples in three popular frameworks:
-- flask
-- falcon
-- fastAPI
+- Flask
+- Falcon
+- FastAPI
+For some reason they all start with the letter **F**
 
 ## Flask
 Flask is my favorite and the most popular framework to make such things.
 The code is very simple.
 ```python 
 from flask import Flask, request, jsonify
+from loguru import logger
 from model import predict as model_predict
 
 app = Flask(__name__)
@@ -58,9 +60,10 @@ app = Flask(__name__)
 @app.route('/predict', methods=['POST'])
 def predict():
     numbers = request.json
-    message = {"prediction": model_predict(numbers)}
-    print(message)
-    return jsonify(message)
+    logger.info(f"Got request for prediction {numbers}")
+    prediction = model_predict(numbers)
+    logger.success(f"Calculated the prediction = {prediction}")
+    return jsonify({"prediction": prediction})
 
 if __name__ == '__main__':
     app.run()
@@ -69,28 +72,30 @@ if __name__ == '__main__':
 To run server type next command in shell
 `python flask_app.py`
 
-![image.png](https://cdn.hashnode.com/res/hashnode/image/upload/v1626074814739/nudnMedvU.png)
+
+![image.png](https://cdn.hashnode.com/res/hashnode/image/upload/v1626229239340/WGq5s5JJTa.png)
 
 Our service takes a list of numbers in json format and returns prediction.
 To test our service we could use programs like  [postman](https://www.postman.com/), but we'd better write the client ourselves.
 
 ```python
 import requests
+from loguru import logger
 
 def send_test():
+    logger.debug("Sending post request to local server")
     r = requests.post("http://localhost:5000/predict", json=[1, 2, 3, 4.44])
-    print(r.status_code)
-    print(r.text)
+    r.raise_for_status()
+    logger.debug(f"Got response status code: {r.status_code}")
+    logger.info(f"Got answer from server: {r.text}")
 
 if __name__ == '__main__':
     send_test()
 ```
-
-![image.png](https://cdn.hashnode.com/res/hashnode/image/upload/v1626075068193/dwu_6H7Zv.png)
-
+![image.png](https://cdn.hashnode.com/res/hashnode/image/upload/v1626229490411/O46KRHbUo.png)
 ## Falcon
 
-Falcon framework doesn't include his own development server. And additional we have to install some wsgi server with them. I use `waitress`, because it's easy to install on the windows platform.
+Falcon framework doesn't include his own development server. That's why, we have to install some wsgi server with them. I use  [waitress](https://docs.pylonsproject.org/projects/waitress/en/latest/)  because it's easy to install on the windows platform.
 ```python
 import falcon
 from waitress import serve
@@ -110,6 +115,7 @@ if __name__ == '__main__':
     serve(app, host='127.0.0.1', port=5000)
 ```
 
+![image.png](https://cdn.hashnode.com/res/hashnode/image/upload/v1626229819256/DLxxIDFay.png)
 For me, this code seems more sophisticated, and I don't like it. But it works fine and you can use this template too.
 To run this script just type 'python falcon_app.py' in the console.
 
@@ -119,56 +125,30 @@ The young and trending framework. Just look how clean this code is.
 ```python
 from typing import List
 from fastapi import FastAPI
+from loguru import logger
 from model import predict as model_predict
 
 app = FastAPI()
 
 @app.post("/predict")
 async def predict(numbers: List[float]):
-    message = {"prediction": model_predict(numbers)}
-    print(message)
-    return message
+    logger.info(f"Got request for prediction {numbers}")
+    prediction = model_predict(numbers)
+    logger.success(f"Calculated the prediction = {prediction}")
+    return {"prediction": prediction}
+
 ```
 
-It's only just one function. I really like it.  
+It's only just one function. I definitely like it.  
 But there are also disadvantages. For starting the script, you need to install ASGI server. And you will need to run the server via command line.
 As ASGI server I choose  [uvicorn](https://www.uvicorn.org/).  
 To run the script you need to run next command:  
 `uvicorn fast_api_app:app --port 5000 --reload`
 
+![image.png](https://cdn.hashnode.com/res/hashnode/image/upload/v1626230087847/HKSe3pybB.png)
 
-![image.png](https://cdn.hashnode.com/res/hashnode/image/upload/v1626155205335/B-yT_oicI.png)
+Works, just fine! 
 
-Works, just fine! But it has some warnings in it. Never mind, this is because I use different versions of sklearn library in the training step, and in production. Don't ever do that in real projects.
-
-## Bonus 1. Let's wrap it in a container
-
-Let's create docker container for our script.
-```docker
-FROM python:3.9
-
-RUN apt-get update -y && apt-get upgrade -y && apt-get autoremove && apt-get autoclean
-RUN pip install --upgrade pip
-RUN pip install uwsgi flask sklearn numpy
-
-WORKDIR /app
-COPY src /app
-
-CMD ["uwsgi", "--http", ":5000", "--module", "flask_app:app", "--processes", "4", "--master"]
-```
-
-## Bonus 2. Let's add out script to nginx docker image.
-
-```docker
-FROM tiangolo/uwsgi-nginx-flask:python3.8
-
-RUN pip install sklearn numpy
-
-WORKDIR /app
-COPY src /app
-
-ENV LISTEN_PORT 5000
-
-RUN mv /app/flask_app.py /app/main.py
-
-```
+## At the end
+Python is known for having [many web frameworks](https://wiki.python.org/moin/WebFrameworks), and anyone can find the one they like best. I have shown examples of the implementation of the simplest API on three of them. 
+Hope you found it interesting.
