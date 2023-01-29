@@ -1,7 +1,6 @@
-# My articles
-Hello guys!
+# My articles 📃
 
-In this repo i will store my articles, published in web
+I try to collect my thoughts in articles. I write about programming, about my life, about my thoughts. I try to write in English, but sometimes I write in Russian. I hope you will find something interesting for yourself.
 
 1. [Simple logging in python](https://rzabolotin.hashnode.dev/simple-logging-in-python-with-loguru)
 2. [Make rest API for ML model](https://rzabolotin.hashnode.dev/make-rest-api-from-ml-model)
